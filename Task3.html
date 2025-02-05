@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Social Project Management</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f3f4f6;
+            padding: 20px;
+        }
+
+        .header {
+            background-color: #2b3a3a;
+            color: white;
+            text-align: center;
+            padding: 15px;
+            border-radius: 5px;
+        }
+
+        .header h1 {
+            margin: 0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 20px auto;
+        }
+
+        .project-card, .task-card {
+            background-color: white;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            margin-bottom: 20px;
+            padding: 15px;
+        }
+
+        .project-card h3 {
+            color: #2b3a3a;
+        }
+
+        .task-card h4 {
+            margin: 0;
+        }
+
+        .task-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .task {
+            background-color: #eef2f3;
+            margin-bottom: 10px;
+            padding: 10px;
+            border-radius: 6px;
+        }
+
+        .task button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 8px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        .task button:hover {
+            background-color: #45a049;
+        }
+
+        .comment-section {
+            margin-top: 15px;
+        }
+
+        .comment {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 10px;
+        }
+
+        .comment img {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+
+        .comment textarea {
+            width: 100%;
+            padding: 8px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+
+        .comment button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            cursor: pointer;
+            border-radius: 5px;
+            margin-top: 5px;
+        }
+
+        .comment button:hover {
+            background-color: #0056b3;
+        }
+
+        .create-group-btn {
+            background-color: #ff7f50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+
+        .create-group-btn:hover {
+            background-color: #e76a3d;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="header">
+    <h1>Social Project Management</h1>
+</div>
+
+<!-- Main Container -->
+<div class="container">
+
+    <!-- Create New Group Button -->
+    <button class="create-group-btn" onclick="createGroup()">Create New Group</button>
+
+    <!-- Project List -->
+    <div id="project-list">
+        <!-- Sample Project -->
+        <div class="project-card" id="project-1">
+            <h3>Project: Web App Development</h3>
+            <p>Assigned to: John Doe, Jane Smith</p>
+            <div class="task-list">
+                <div class="task">
+                    <h4>Task 1: Design UI</h4>
+                    <button onclick="commentOnTask(1)">Comment</button>
+                </div>
+                <div class="task">
+                    <h4>Task 2: Develop Backend</h4>
+                    <button onclick="commentOnTask(2)">Comment</button>
+                </div>
+            </div>
+
+            <!-- Comment Section -->
+            <div class="comment-section" id="comments-1" style="display:none;">
+                <div class="comment">
+                    <img src="https://via.placeholder.com/35" alt="User">
+                    <div>
+                        <p><strong>John:</strong> Looks good! Let’s start working on it.</p>
+                    </div>
+                </div>
+                <textarea id="comment-input-1" placeholder="Add a comment..."></textarea>
+                <button onclick="postComment(1)">Post Comment</button>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    // Function to create a new group/project
+    function createGroup() {
+        const projectList = document.getElementById('project-list');
+        const newProjectId = 'project-' + (projectList.children.length + 1);
+        
+        const newProject = document.createElement('div');
+        newProject.className = 'project-card';
+        newProject.id = newProjectId;
+
+        newProject.innerHTML = `
+            <h3>Project: New Group Project</h3>
+            <p>Assigned to: Alice, Bob</p>
+            <div class="task-list">
+                <div class="task">
+                    <h4>Task 1: Task Description</h4>
+                    <button onclick="commentOnTask(${projectList.children.length + 1})">Comment</button>
+                </div>
+            </div>
+            <div class="comment-section" id="comments-${projectList.children.length + 1}" style="display:none;">
+                <div class="comment">
+                    <img src="https://via.placeholder.com/35" alt="User">
+                    <div>
+                        <p><strong>Alice:</strong> I will take care of this task.</p>
+                    </div>
+                </div>
+                <textarea id="comment-input-${projectList.children.length + 1}" placeholder="Add a comment..."></textarea>
+                <button onclick="postComment(${projectList.children.length + 1})">Post Comment</button>
+            </div>
+        `;
+        
+        projectList.appendChild(newProject);
+    }
+
+    // Toggle comment section for a specific task
+    function commentOnTask(taskId) {
+        const commentSection = document.getElementById(`comments-${taskId}`);
+        const isVisible = commentSection.style.display === 'block';
+        commentSection.style.display = isVisible ? 'none' : 'block';
+    }
+
+    // Post a comment for a task
+    function postComment(taskId) {
+        const commentInput = document.getElementById(`comment-input-${taskId}`);
+        const commentText = commentInput.value.trim();
+
+        if (commentText === '') {
+            alert('Please write a comment!');
+            return;
+        }
+
+        const commentSection = document.getElementById(`comments-${taskId}`);
+        const newComment = document.createElement('div');
+        newComment.className = 'comment';
+        newComment.innerHTML = `
+            <img src="https://via.placeholder.com/35" alt="User">
+            <div>
+                <p><strong>User:</strong> ${commentText}</p>
+            </div>
+        `;
+        
+        commentSection.appendChild(newComment);
+        commentInput.value = ''; // Clear the input after posting
+    }
+</script>
+
+</body>
+</html>
