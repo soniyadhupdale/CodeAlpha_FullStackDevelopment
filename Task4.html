@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Conferencing</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background-color: #2f5d62;
+            color: white;
+            text-align: center;
+            padding: 20px;
+        }
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 20px;
+        }
+        video {
+            width: 300px;
+            height: 200px;
+            border: 2px solid #333;
+            margin: 10px;
+        }
+        .call-container {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        .call-btns button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px;
+            margin: 10px;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: 0.3s;
+        }
+        .call-btns button:hover {
+            background-color: #45a049;
+        }
+        .file-upload {
+            margin-top: 20px;
+        }
+        .file-upload input {
+            padding: 10px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Video Conferencing Platform</h1>
+</header>
+
+<div class="container">
+    <div class="call-container">
+        <video id="localVideo" autoplay muted></video>
+        <div class="call-btns">
+            <button id="startBtn">Start Video Call</button>
+            <button id="endBtn" disabled>End Call</button>
+        </div>
+
+        <div class="file-upload">
+            <input type="file" id="fileInput" />
+            <button onclick="uploadFile()">Upload File</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Getting references to HTML elements
+    const localVideo = document.getElementById('localVideo');
+    const startBtn = document.getElementById('startBtn');
+    const endBtn = document.getElementById('endBtn');
+    const fileInput = document.getElementById('fileInput');
+
+    let localStream;
+    let peerConnection;
+
+    // Function to start the video call
+    startBtn.addEventListener('click', startCall);
+    endBtn.addEventListener('click', endCall);
+
+    // Initialize the call by capturing the user's webcam
+    async function startCall() {
+        try {
+            // Get user media (webcam)
+            localStream = await navigator.mediaDevices.getUserMedia({
+                video: true,
+                audio: true
+            });
+
+            // Set the local video stream to be displayed
+            localVideo.srcObject = localStream;
+
+            // Create peer connection and add stream
+            peerConnection = new RTCPeerConnection();
+
+            localStream.getTracks().forEach(track => {
+                peerConnection.addTrack(track, localStream);
+            });
+
+            // For now, just log the peer connection
+            console.log('Peer connection created');
+
+            // Enable End Call button and disable Start button
+            startBtn.disabled = true;
+            endBtn.disabled = false;
+
+        } catch (error) {
+            console.error('Error starting call:', error);
+        }
+    }
+
+    // End the video call
+    function endCall() {
+        localStream.getTracks().forEach(track => track.stop()); // Stop tracks (audio, video)
+        peerConnection.close(); // Close the peer connection
+
+        // Disable End button and enable Start button
+        startBtn.disabled = false;
+        endBtn.disabled = true;
+    }
+
+    // Handle file upload
+    function uploadFile() {
+        const file = fileInput.files[0];
+        if (file) {
+            alert('File uploaded: ' + file.name);
+            // Implement file sending via WebRTC or server later
+        } else {
+            alert('Please select a file to upload.');
+        }
+    }
+</script>
+
+</body>
+</html>
